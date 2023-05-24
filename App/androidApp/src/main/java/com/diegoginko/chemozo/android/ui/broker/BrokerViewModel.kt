@@ -2,6 +2,7 @@ package com.diegoginko.chemozo.android.ui.broker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.diegoginko.chemozo.android.utilidades.Multicast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,6 +40,14 @@ class BrokerViewModel : ViewModel() {
                     }
                 })
                 broker.listen()
+
+                //Envia la ip al multicast
+                val envioIp = Multicast().postIpMulticast()
+                if(envioIp.first){
+                    //La lee para checkear que este
+                    val ip = Multicast().getIpMulticast()
+                    toastMessage.postValue(ip)
+                }
 
             }
         }
