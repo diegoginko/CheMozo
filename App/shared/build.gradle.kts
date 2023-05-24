@@ -23,7 +23,20 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting{
+            dependencies{
+                //Koin
+                implementation("io.insert-koin:koin-core:3.1.6")
+                implementation("io.insert-koin:koin-test:3.1.6")
+
+                //Coroutines
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+                //KotlinX
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.4.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))

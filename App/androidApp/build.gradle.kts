@@ -15,6 +15,8 @@ android {
     }
     buildFeatures {
         compose = true
+        dataBinding = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.4"
@@ -50,4 +52,13 @@ dependencies {
     //Bibliotecas MQTT
     implementation("com.github.davidepianca98.KMQTT:kmqtt-common-jvm:0.4.1")
     implementation("com.github.davidepianca98.KMQTT:kmqtt-client-jvm:0.4.1")
+    implementation("com.github.davidepianca98.KMQTT:kmqtt-broker-jvm:0.4.1")
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    implementation("io.insert-koin:koin-core:3.1.6")
+    implementation("io.insert-koin:koin-android:3.1.6")
+    implementation("io.insert-koin:koin-androidx-compose:3.1.6")
 }

@@ -1,9 +1,11 @@
 package com.diegoginko.chemozo
 
-class Greeting {
-    private val platform: Platform = getPlatform()
+import com.diegoginko.chemozo.utils.Platform
 
-    fun greet(): String {
-        return "Hello, ${platform.name}!"
-    }
+class Greeting {
+//    private val platform: Platform = getPlatform()
+//
+//    fun greet(): String {
+//        return "Hello, ${platform.name}!"
+//    }
 }
