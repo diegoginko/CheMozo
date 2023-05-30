@@ -41,14 +41,35 @@ class BrokerViewModel : ViewModel() {
                 })
                 broker.listen()
 
-                //Envia la ip al multicast
-                val envioIp = Multicast().postIpMulticast()
-                if(envioIp.first){
-                    //La lee para checkear que este
+            }
+        }
+    }
+
+    fun onSendMulticast(){
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    //Envia la ip al multicast
+                    val envioIp = Multicast().postIpMulticast()
+                    if(envioIp.first){
+                        toastMessage.postValue("Se envio la ip ")
+                    }
+                }catch (e:Exception){
+                    toastMessage.postValue(e.message)
+                }
+            }
+        }
+    }
+
+    fun onGetMulticast(){
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
                     val ip = Multicast().getIpMulticast()
                     toastMessage.postValue(ip)
+                }catch (e: Exception){
+                    toastMessage.postValue(e.message)
                 }
-
             }
         }
     }

@@ -21,9 +21,9 @@ class Multicast {
                 if(!ipAdress.isNullOrEmpty()){
                     val buffer = ipAdress.encodeToByteArray()
 //                    val buffer = ByteArray(1000)
-                    val packet = DatagramPacket(buffer, buffer.size)
                     val group: InetAddress = InetAddress.getByName("239.1.1.234")
                     val s: MulticastSocket = MulticastSocket(7234)
+                    val packet = DatagramPacket(buffer, buffer.size,group,7234)
 
                     s.joinGroup(group)
                     s.soTimeout = 3000
