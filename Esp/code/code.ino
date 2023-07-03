@@ -5,6 +5,9 @@
 const char* ssid = "****";
 const char* password = "****";
 
+//Led interno 8266 cambiar a 2 para esp01
+const int ledInterno = 16;
+
 const int btnUno = 4;
 const int btnDos = 5;
 int btnUnoPressed = 0;
@@ -18,8 +21,9 @@ char  replyPacket[] = "Hi there! Got the message :-)";  // a reply string to sen
 
 // MQTT Broker
 //const char *mqtt_broker = "broker.emqx.io";
-const char *topic = "esp8266/test";
-const char *mqtt_username = "emqx";
+String topic = "mesa/accion/";
+String keepAlive = "mesa/keepAlive/";
+const char *mqtt_username = "user";
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 
@@ -33,12 +37,15 @@ void setup()
   Serial.println();
   pinMode(btnUno, INPUT);
   pinMode(btnDos, INPUT);
+  pinMode(ledInterno, OUTPUT);
 
   Serial.printf("Connecting to %s ", ssid);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
   {
+    digitalWrite(ledInterno, HIGH);
     delay(500);
+    digitalWrite(ledInterno, LOW);
     Serial.print(".");
   }
   Serial.println(" connected");
@@ -50,6 +57,7 @@ void setup()
   bool handShake = false;
   while(!handShake){
     Serial.println("Esperando ip");
+    digitalWrite(ledInterno, LOW);
     int packetSize = Udp.parsePacket();
     if (packetSize)
     {
@@ -68,11 +76,11 @@ void setup()
       client.setServer(mqtt_broker, mqtt_port);
       client.setCallback(callback);
       while (!client.connected()) {
-          String client_id = "esp8266-client-";
+          String client_id = "CheMozo-";
           client_id += String(WiFi.macAddress());
           Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
           if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
-              Serial.println("Public emqx mqtt broker connected");
+              Serial.println("Public mqtt broker connected");
           } else {
               Serial.print("failed with state ");
               Serial.print(client.state());
@@ -80,11 +88,16 @@ void setup()
           }
       }
       // publish and subscribe
-      client.publish(topic, "hello emqx");
-      client.subscribe(topic);
+      String macAdress = String(WiFi.macAddress());
+      keepAlive += macAdress.c_str();
+      topic += macAdress.c_str();
+      client.publish(topic.c_str(), "Hola!!", macAdress.c_str());
+      client.subscribe(topic.c_str());
+      digitalWrite(ledInterno, HIGH);
 
       handShake = true;
     }
+    
     
   }
 }
@@ -106,24 +119,36 @@ void loop()
   btnUnoPressed = digitalRead(btnUno);
   btnDosPressed = digitalRead(btnDos);
 
+  client.publish(keepAlive.c_str(),"Estoy vivo");
+
+  if(!client.connected()){
+    Serial.println("Desconectado de MQTT");
+    digitalWrite(ledInterno, LOW);
+  }
+
   if(btnUnoPressed == HIGH || btnDosPressed == HIGH){
     if(btnUnoPressed == HIGH && btnDosPressed == HIGH){
-      client.publish(topic,"Los dos");
+      client.publish(topic.c_str(),"Los dos");
+      digitalWrite(ledInterno, LOW);
       delay(1000);
+      digitalWrite(ledInterno, HIGH);
     }else if(btnUnoPressed == HIGH){
-      client.publish(topic,"Uno");
+      client.publish(topic.c_str(),"Uno");
+      digitalWrite(ledInterno, LOW);
       delay(1000);
+      digitalWrite(ledInterno, HIGH);
     }else if(btnDosPressed == HIGH){
-      client.publish(topic,"Dos");
+      client.publish(topic.c_str(),"Dos");
+      digitalWrite(ledInterno, LOW);
       delay(1000);
+      digitalWrite(ledInterno, HIGH);
     }else{
-      client.publish(topic,"No se");
+      client.publish(topic.c_str(),"No se");
+      digitalWrite(ledInterno, LOW);
       delay(1000);
+      digitalWrite(ledInterno, HIGH);
     }
   }
   digitalWrite(btnUnoPressed,LOW);
   digitalWrite(btnDosPressed,LOW);
-  //client.loop();
-  //client.publish(topic,WiFi.macAddress().c_str());
-  //delay(2000);
 }
