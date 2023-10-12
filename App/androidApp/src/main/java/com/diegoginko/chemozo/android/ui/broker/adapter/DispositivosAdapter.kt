@@ -12,7 +12,7 @@ import com.diegoginko.chemozo.android.entidades.Dispositivo
 
 class DispositivosAdapter(): RecyclerView.Adapter<DispositivosViewHolder>(), AdapterView.OnItemLongClickListener  {
 
-    private var listaDispositivos: ArrayList<Dispositivo> = ArrayList()
+    private var listaDispositivos: List<Dispositivo> = listOf()
     private var dispositivoSeleccionado: Dispositivo? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DispositivosViewHolder {
@@ -29,7 +29,7 @@ class DispositivosAdapter(): RecyclerView.Adapter<DispositivosViewHolder>(), Ada
         holder.bind(listaDispositivos[position],this)
     }
 
-    fun setComprobantes(dispositivos: ArrayList<Dispositivo>) {
+    fun setComprobantes(dispositivos: List<Dispositivo>) {
         listaDispositivos = dispositivos
         notifyDataSetChanged()
     }

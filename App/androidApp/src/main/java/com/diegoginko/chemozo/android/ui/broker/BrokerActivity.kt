@@ -12,6 +12,7 @@ import com.diegoginko.chemozo.android.entidades.Dispositivo
 import com.diegoginko.chemozo.android.ui.broker.adapter.DispositivosAdapter
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.GregorianCalendar
 
 class BrokerActivity : AppCompatActivity() {
     @OptIn(ExperimentalUnsignedTypes::class)
@@ -40,6 +41,9 @@ class BrokerActivity : AppCompatActivity() {
                 Toast.makeText(this,it,Toast.LENGTH_SHORT).show()
             }
         }
+        model.listadoDispositivosMutableHandler.observe(this){
+            adapter.setComprobantes(it)
+        }
     }
 
     private fun initializeDispositivos(){
@@ -49,12 +53,12 @@ class BrokerActivity : AppCompatActivity() {
         listDispositivos.adapter = adapter
 
         val dispositivos = arrayListOf<Dispositivo>()
-        dispositivos.add(Dispositivo("Prueba","Mesa 8"))
-        dispositivos.add(Dispositivo("Prueba","Mesa 9"))
-        dispositivos.add(Dispositivo("Prueba","Mesa 14"))
-        dispositivos.add(Dispositivo("Prueba","Mesa 2"))
-        dispositivos.add(Dispositivo("Prueba","Mesa 5"))
-        dispositivos.add(Dispositivo("Prueba","Mesa 23"))
+        dispositivos.add(Dispositivo(0L,"Prueba","Mesa 8",true, GregorianCalendar()))
+        dispositivos.add(Dispositivo(0L,"Prueba","Mesa 9",true, GregorianCalendar()))
+        dispositivos.add(Dispositivo(0L,"Prueba","Mesa 14",true, GregorianCalendar()))
+        dispositivos.add(Dispositivo(0L,"Prueba","Mesa 2",true, GregorianCalendar()))
+        dispositivos.add(Dispositivo(0L,"Prueba","Mesa 5",true, GregorianCalendar()))
+        dispositivos.add(Dispositivo(0L,"Prueba","Mesa 23",true, GregorianCalendar()))
 
         adapter.setComprobantes(dispositivos)
     }

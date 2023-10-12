@@ -7,7 +7,8 @@ import org.koin.dsl.module
 fun initKoin(enableNetworkLogs: Boolean = false, appDeclaration: KoinAppDeclaration = {}) =
     startKoin {
         appDeclaration()
-        modules(sharedModule(enableNetworkLogs = enableNetworkLogs), platformModule())
+        modules()
+//        modules(sharedModule(enableNetworkLogs = enableNetworkLogs), platformModule())
     }
 
 fun sharedModule(enableNetworkLogs: Boolean) = module {

@@ -1,6 +1,7 @@
 package com.diegoginko.chemozo.android.application
 
 import android.app.Application
+import com.diegoginko.chemozo.android.application.entities.dispositivoModule
 import com.diegoginko.chemozo.android.di.adapterModule
 import com.diegoginko.chemozo.android.di.appModule
 import com.diegoginko.chemozo.di.initKoin
@@ -16,7 +17,7 @@ class CheMozo : Application() {
         initKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@CheMozo)
-            modules(appModule, adapterModule)
+            modules(appModule, adapterModule, databaseModule, dispositivoModule)
         }
 
     }

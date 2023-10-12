@@ -67,8 +67,8 @@ kotlin {
 
 android {
     namespace = "com.diegoginko.chemozo"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
-        minSdk = 24
+        minSdk = 23
     }
 }

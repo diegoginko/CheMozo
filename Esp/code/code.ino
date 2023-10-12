@@ -2,8 +2,10 @@
 #include <WiFiUdp.h>
 #include <PubSubClient.h>
 
-const char* ssid = "****";
-const char* password = "****";
+const char* ssid = "TopoSWITCH";
+const char* password = "avestruz21";
+//const char* ssid = "Telecentro-fe1c";
+//const char* password = "QMM3QMY4GJNH";
 
 //Led interno 8266 cambiar a 2 para esp01
 const int ledInterno = 16;
