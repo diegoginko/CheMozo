@@ -192,5 +192,17 @@ class BrokerViewModel(
 
     }
 
+    fun onBorrarDispositivos(){
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                dispositivoRepository.deleteAll()
+                //Actualizo listado
+                getDispositivos()
+            }
+        }
+
+
+
+    }
 
 }
