@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.diegoginko.chemozo.android.entidades.Dispositivo
+import java.util.GregorianCalendar
 
 @Dao
 interface DispositivoDAO {
@@ -30,6 +31,7 @@ interface DispositivoDAO {
     @Query("SELECT * FROM dispositivos")
     fun getAll(): List<Dispositivo>
 
-
+    @Query("UPDATE dispositivos SET ultimaConexion =:ultimaConexion WHERE nombre =:nombre")
+    fun updateConexion(nombre:String, ultimaConexion:GregorianCalendar)
 
 }

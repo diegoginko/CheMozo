@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import mqtt.broker.Broker
 import mqtt.broker.interfaces.PacketInterceptor
 import mqtt.packets.MQTTPacket
+import mqtt.packets.Qos
 import mqtt.packets.mqtt.MQTTConnect
 import mqtt.packets.mqtt.MQTTPublish
 import java.nio.charset.StandardCharsets
@@ -29,22 +30,30 @@ class BrokerViewModel(
     val listadoDispositivosMutableHandler = MutableLiveData<List<Dispositivo>>()
     val toastMessage = MutableLiveData<String>()
 
+    lateinit var broker : Broker
+
     init {
         uiScope.launch {
             withContext(Dispatchers.IO) {
                 //Configuracion de broker
-                val broker = Broker(packetInterceptor = object : PacketInterceptor {
+                broker = Broker(packetInterceptor = object : PacketInterceptor {
                     override fun packetReceived(clientId: String, username: String?, password: UByteArray?, packet: MQTTPacket) {
                         when (packet) {
                             is MQTTConnect -> {
                                 //toastMessage.postValue(packet.protocolName)
-                                //Creo el dispositivo si no existe, si no actualizo el estado a activo
-                                onGetConexion(clientId)
+                                if(clientId.contains("CheMozo-")){
+                                    //Creo el dispositivo si no existe, si no actualizo el estado a activo
+                                    onGetConexion(clientId)
+                                }
 
                             }
                             is MQTTPublish -> {
-                                toastMessage.postValue("${packet.topicName} - ${packet.payload?.let { String(it.toByteArray(), StandardCharsets.UTF_8) }}")
+//                                toastMessage.postValue("${packet.topicName} - ${packet.payload?.let { String(it.toByteArray(), StandardCharsets.UTF_8) }}")
                                 //Recibo mensaje y acciono segun corresponda
+                                if(packet.payload != null){
+                                    procesarMensaje(clientId,packet.topicName, packet.payload!!)
+                                }
+
                             }
                         }
                     }
@@ -111,6 +120,76 @@ class BrokerViewModel(
                 getDispositivos()
             }
         }
+    }
+
+    fun updateAlias(nombre:String,alias:String){
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                val dispositivo = dispositivoRepository.getByNombre(nombre)
+                if(dispositivo != null){
+                    dispositivo.alias = alias
+                    dispositivoRepository.update(dispositivo)
+                }else{
+                    toastMessage.postValue("No se encontro el dispositivo a actualizar")
+                }
+
+                //Actualizo listado
+                getDispositivos()
+            }
+        }
+    }
+
+    fun procesarMensaje(nombreDispositivo:String,tema:String,mensajePlano:UByteArray){
+        try{
+            when{
+                tema.contains("mesa/accion/")->{
+                    uiScope.launch {
+                        withContext(Dispatchers.IO) {
+                            val dispositivo = dispositivoRepository.getByNombre(nombreDispositivo)
+                            val nombreEnviar = if(dispositivo!=null){
+                                if (dispositivo.alias.isNotEmpty()){
+                                    dispositivo.alias
+                                }else{
+                                    dispositivo.nombre
+                                }
+                            }else{
+                                nombreDispositivo
+                            }
+                            when(String(mensajePlano.toByteArray(), StandardCharsets.UTF_8)){
+                                "Hola!!"->{
+                                    toastMessage.postValue("$nombreEnviar se conectó")
+                                }
+                                "Uno"->{
+                                    val enviado = broker.publish(false,"mesa/mensaje", Qos.AT_LEAST_ONCE,null, "$nombreEnviar Solicita atencion".encodeToByteArray().toUByteArray())
+                                    if(!enviado){
+                                        toastMessage.postValue("$nombreEnviar Solicita atencion")
+                                    }
+                                }
+                                "Dos"->{
+                                    val enviado = broker.publish(false,"mesa/mensaje", Qos.AT_LEAST_ONCE,null, "$nombreEnviar Pide cuenta".encodeToByteArray().toUByteArray())
+                                    if(!enviado){
+                                        toastMessage.postValue("$nombreEnviar Pide cuenta")
+                                    }
+                                }
+                                else->{
+                                    toastMessage.postValue("${tema} - ${String(mensajePlano.toByteArray(), StandardCharsets.UTF_8)}")
+                                }
+                            }
+                        }
+                    }
+
+                }
+                tema.contains("mesa/keepAlive/")->{
+
+                }
+                else->{
+                    toastMessage.postValue("${tema} - ${String(mensajePlano.toByteArray(), StandardCharsets.UTF_8)}")
+                }
+            }
+        }catch (e:Exception){
+            toastMessage.postValue("Error al procesar mensaje - ${e.message}")
+        }
+
     }
 
 

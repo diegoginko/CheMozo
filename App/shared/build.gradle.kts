@@ -69,6 +69,6 @@ android {
     namespace = "com.diegoginko.chemozo"
     compileSdk = 34
     defaultConfig {
-        minSdk = 24
+        minSdk = 23
     }
 }
