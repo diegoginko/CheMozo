@@ -24,25 +24,30 @@ class ClientViewModel : ViewModel() {
     init {
         uiScope.launch {
             withContext(Dispatchers.IO) {
-                //Configuracion de Client
-                client = MQTTClient(
-                    5,
-                    "192.168.1.150",
-                    1883,
-                    null
-                ) {
-                    if(it.payload != null){
-                        procesarMensaje(it.topicName, it.payload!!)
-                    }
+                try {
+                    //Configuracion de Client
+                    client = MQTTClient(
+                        5,
+                        "192.168.1.150",
+                        1883,
+                        null
+                    ) {
+                        if(it.payload != null){
+                            procesarMensaje(it.topicName, it.payload!!)
+                        }
 //                    println(it.payload?.toByteArray()?.decodeToString())
-                }
-                client.subscribe(listOf(
-                    Subscription("mesa/mensaje", SubscriptionOptions(Qos.AT_LEAST_ONCE))
-                ))
-                client.publish(false, Qos.EXACTLY_ONCE, "mozo/mensaje", "hola".encodeToByteArray().toUByteArray())
-                client.run() // Blocking method, use step() if you don't want to block the thread
+                    }
+                    client.subscribe(listOf(
+                        Subscription("mesa/mensaje", SubscriptionOptions(Qos.AT_LEAST_ONCE))
+                    ))
+                    client.publish(false, Qos.EXACTLY_ONCE, "mozo/mensaje", "hola".encodeToByteArray().toUByteArray())
+                    client.run() // Blocking method, use step() if you don't want to block the thread
 //                client.step()
-                toastMessage.postValue("${client.running}")
+                    toastMessage.postValue("${client.running}")
+                }catch (e:Exception){
+                    toastMessage.postValue("${e.message}")
+                }
+
             }
         }
     }
